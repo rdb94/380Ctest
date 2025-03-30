@@ -27,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         println("Button Clicked!")
     }
 
+    fun recordClick(view: View?){
+        println("Button Clicked!")
+    }
+
     /**
      * A native method that is implemented by the 'a380ctest' native library,
      * which is packaged with this application.
