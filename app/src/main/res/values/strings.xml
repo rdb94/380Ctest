@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">380Ctest</string>
+    <string name="button_text">Upload Audio File</string>
 </resources>
