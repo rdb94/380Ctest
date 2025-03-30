@@ -1,8 +1,10 @@
 package com.example.a380ctest
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Switch
 import android.widget.TextView
 import com.example.a380ctest.databinding.ActivityMainBinding
 import java.util.Scanner
@@ -21,7 +23,15 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         binding.sampleText.text = stringFromJNI()
-    }
+
+        var switch: Switch = findViewById(R.id.switch1)
+
+        switch.setOnClickListener {
+                val intent = Intent(this, ClinicianModeScreen::class.java)
+                startActivity(intent)
+            }
+        }
+
 
     fun audioClick(view: View?){
         println("Button Clicked!")
