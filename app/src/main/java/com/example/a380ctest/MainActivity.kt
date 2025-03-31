@@ -1,10 +1,14 @@
 package com.example.a380ctest
 
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
+import android.widget.Switch
+import android.widget.TextView
 import androidx.activity.compose.setContent
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +26,7 @@ import com.example.a380ctest.recorder.AndroidAudioRecorder
 import java.io.File
 import java.util.Scanner
 import kotlin.math.abs
+
 
 
 class MainActivity() : ComponentActivity(), Parcelable {
@@ -62,52 +67,21 @@ class MainActivity() : ComponentActivity(), Parcelable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.RECORD_AUDIO),
-            0
-        )
-        setContent {
-            AudioRecorderTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(
-                        onClick = {
-                            File(cacheDir, "audio.mp3").also {
-                                recorder.start(it)
-                                audioFile = it
-                            }
-                        }
-                    ) {
-                        Text(text = "Start recording")
-                    }
-                    Button(
-                        onClick = {
-                            recorder.stop()
-                        }
-                    ) {
-                        Text(text = "Stop recording")
-                    }
-                    Button(
-                        onClick = {
-                            player.playFile(audioFile ?: return@Button)
-                        }
-                    ) {
-                        Text(text = "Play")
-                    }
-                    Button(
-                        onClick = {
-                            player.stop()
-                        }
-                    ) {
-                        Text(text = "Stop playing")
-                    }
-                }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Example of a call to a native method
+        binding.sampleText.text = stringFromJNI()
+
+        var switch: Switch = findViewById(R.id.switch1)
+
+        switch.setOnClickListener {
+                val intent = Intent(this, ClinicianModeScreen::class.java)
+                startActivity(intent)
             }
         }
+
 
         fun audioClick(view: View?) {
             println("Button Clicked!")
