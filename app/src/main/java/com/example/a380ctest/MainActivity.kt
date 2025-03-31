@@ -1,7 +1,6 @@
 package com.example.a380ctest
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
 import android.os.Bundle
 import android.os.Parcel
@@ -9,7 +8,7 @@ import android.os.Parcelable
 import android.view.View
 import android.widget.Switch
 import android.widget.TextView
-import androidx.activity.compose.setContent
+// import androidx.activity.compose.setContent
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -43,25 +42,36 @@ class MainActivity() : ComponentActivity(), Parcelable {
 
     private var audioFile: File? = null
 
+    // Constructor for Parcelable
     constructor(parcel: Parcel) : this() {
-
+        // Read data from the Parcel (if needed)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-
+        // Write data to the Parcel (if needed)
     }
 
     override fun describeContents(): Int {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<MainActivity> {
-        override fun createFromParcel(parcel: Parcel): MainActivity {
-            return MainActivity(parcel)
+    // Companion object for Parcelable and Library Loading
+    companion object {
+        // Load the native library
+        init {
+            System.loadLibrary("a380ctest")
         }
 
-        override fun newArray(size: Int): Array<MainActivity?> {
-            return arrayOfNulls(size)
+        // Parcelable CREATOR
+        @JvmField
+        val CREATOR: Parcelable.Creator<MainActivity> = object : Parcelable.Creator<MainActivity> {
+            override fun createFromParcel(parcel: Parcel): MainActivity {
+                return MainActivity(parcel)
+            }
+
+            override fun newArray(size: Int): Array<MainActivity?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
@@ -77,33 +87,15 @@ class MainActivity() : ComponentActivity(), Parcelable {
         var switch: Switch = findViewById(R.id.switch1)
 
         switch.setOnClickListener {
-                val intent = Intent(this, ClinicianModeScreen::class.java)
-                startActivity(intent)
-            }
+            val intent = Intent(this, ClinicianModeScreen::class.java)
+            startActivity(intent)
         }
+    }
 
+    external fun stringFromJNI(): String
+}
 
-        fun audioClick(view: View?) {
-            println("Button Clicked!")
-        }
-
-        fun recordClick(view: View?) {
-            println("Button Clicked!")
-        }
-
-        /**
-         * A native method that is implemented by the 'a380ctest' native library,
-         * which is packaged with this application.
-         */
-        external fun stringFromJNI(): String
-
-        companion object {
-            // Used to load the 'a380ctest' library on application startup.
-            init {
-                System.loadLibrary("a380ctest")
-            }
-        }
-
+/*
         fun main() {
             val Fs = 4000
             val Channels = 1
@@ -277,3 +269,5 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 }
+
+ */
