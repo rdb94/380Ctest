@@ -1,31 +1,16 @@
 package com.example.a380ctest
 
+// import androidx.activity.compose.setContent
 import android.content.Intent
-import android.Manifest
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.View
 import android.widget.Switch
-import android.widget.TextView
-// import androidx.activity.compose.setContent
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import com.example.a380ctest.databinding.ActivityMainBinding
 import com.example.a380ctest.playback.AndroidAudioPlayer
 import com.example.a380ctest.recorder.AndroidAudioRecorder
 import java.io.File
-import java.util.Scanner
-import kotlin.math.abs
-
 
 
 class MainActivity() : ComponentActivity(), Parcelable {
