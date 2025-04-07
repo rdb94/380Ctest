@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.view.View
 import android.widget.Switch
 import androidx.activity.ComponentActivity
 import com.example.a380ctest.databinding.ActivityMainBinding
@@ -77,6 +78,9 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 
+    fun recordClick(view: View?){
+        println("Button clicked!")
+    }
     external fun stringFromJNI(): String
 }
 
