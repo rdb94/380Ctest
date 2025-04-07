@@ -81,6 +81,10 @@ class MainActivity() : ComponentActivity(), Parcelable {
     fun recordClick(view: View?){
         println("Button clicked!")
     }
+
+    fun audioClick(view: View?){
+        println("Button clicked!")
+    }
     external fun stringFromJNI(): String
 }
 
