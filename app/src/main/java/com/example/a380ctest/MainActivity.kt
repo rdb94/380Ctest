@@ -1,27 +1,17 @@
 package com.example.a380ctest
 
-import android.Manifest
+// import androidx.activity.compose.setContent
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
-import androidx.activity.compose.setContent
+import android.widget.Switch
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 import com.example.a380ctest.databinding.ActivityMainBinding
 import com.example.a380ctest.playback.AndroidAudioPlayer
 import com.example.a380ctest.recorder.AndroidAudioRecorder
 import java.io.File
-import java.util.Scanner
-import kotlin.math.abs
 
 
 class MainActivity() : ComponentActivity(), Parcelable {
@@ -38,98 +28,67 @@ class MainActivity() : ComponentActivity(), Parcelable {
 
     private var audioFile: File? = null
 
+    // Constructor for Parcelable
     constructor(parcel: Parcel) : this() {
-
+        // Read data from the Parcel (if needed)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-
+        // Write data to the Parcel (if needed)
     }
 
     override fun describeContents(): Int {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<MainActivity> {
-        override fun createFromParcel(parcel: Parcel): MainActivity {
-            return MainActivity(parcel)
+    // Companion object for Parcelable and Library Loading
+    companion object {
+        // Load the native library
+        init {
+            System.loadLibrary("a380ctest")
         }
 
-        override fun newArray(size: Int): Array<MainActivity?> {
-            return arrayOfNulls(size)
+        // Parcelable CREATOR
+        @JvmField
+        val CREATOR: Parcelable.Creator<MainActivity> = object : Parcelable.Creator<MainActivity> {
+            override fun createFromParcel(parcel: Parcel): MainActivity {
+                return MainActivity(parcel)
+            }
+
+            override fun newArray(size: Int): Array<MainActivity?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.RECORD_AUDIO),
-            0
-        )
-        setContent {
-            AudioRecorderTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(
-                        onClick = {
-                            File(cacheDir, "audio.mp3").also {
-                                recorder.start(it)
-                                audioFile = it
-                            }
-                        }
-                    ) {
-                        Text(text = "Start recording")
-                    }
-                    Button(
-                        onClick = {
-                            recorder.stop()
-                        }
-                    ) {
-                        Text(text = "Stop recording")
-                    }
-                    Button(
-                        onClick = {
-                            player.playFile(audioFile ?: return@Button)
-                        }
-                    ) {
-                        Text(text = "Play")
-                    }
-                    Button(
-                        onClick = {
-                            player.stop()
-                        }
-                    ) {
-                        Text(text = "Stop playing")
-                    }
-                }
-            }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Example of a call to a native method
+        binding.sampleText.text = stringFromJNI()
+
+        var switch: Switch = findViewById(R.id.switch1)
+
+        switch.setOnClickListener {
+            val intent = Intent(this, ClinicianModeScreen::class.java)
+            startActivity(intent)
         }
+    }
 
-        fun audioClick(view: View?) {
-            println("Button Clicked!")
-        }
+    fun recordClick(view: View?){
+        println("Button clicked!")
+    }
 
-        fun recordClick(view: View?) {
-            println("Button Clicked!")
-        }
+    fun audioClick(view: View?){
+        println("Button clicked!")
+    }
+    external fun stringFromJNI(): String
+}
 
-        /**
-         * A native method that is implemented by the 'a380ctest' native library,
-         * which is packaged with this application.
-         */
-        external fun stringFromJNI(): String
-
-        companion object {
-            // Used to load the 'a380ctest' library on application startup.
-            init {
-                System.loadLibrary("a380ctest")
-            }
-        }
-
+/*
         fun main() {
             val Fs = 4000
             val Channels = 1
@@ -303,3 +262,5 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 }
+
+ */
