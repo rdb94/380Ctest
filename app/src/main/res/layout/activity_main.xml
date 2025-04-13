@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="#F8F4F6"
     android:onClick="audioClick"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteY="56dp">
 
     <TextView
         android:id="@+id/sample_text"
@@ -23,7 +24,7 @@
         android:layout_width="125dp"
         android:layout_height="65dp"
         android:layout_marginBottom="100dp"
-        android:text="Upload Audio File"
+        android:text="@string/button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -35,7 +36,7 @@
         android:layout_marginBottom="250dp"
         android:backgroundTintMode="add"
         android:onClick="recordClick"
-        android:text="Record"
+        android:text="@string/button2_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -49,5 +50,53 @@
         app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Severity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/severity_text"
+        android:textColor="#0D0C0C"
+        android:textSize="24sp"
+        android:typeface="sans"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="409dp"
+        android:layout_height="51dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="1dp">
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="179dp"
+        android:layout_height="160dp"
+        android:background="#014CAF50"
+        android:src="@android:drawable/presence_online"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.38" />
+
+    <TextView
+        android:id="@+id/Severity1"
+        android:layout_width="97dp"
+        android:layout_height="49dp"
+        android:textAlignment="center"
+        android:textColor="#050505"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.39"
+        tools:text="@string/severity_num" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

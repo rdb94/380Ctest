@@ -2,4 +2,6 @@
     <string name="app_name">380Ctest</string>
     <string name="button_text">Upload Audio File</string>
     <string name='button2_text'>Record</string>
+    <string name='severity_text'>Severity Score: </string>
+    <string name='severity_num'>Put number code here</string>
 </resources>
