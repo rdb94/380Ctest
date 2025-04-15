@@ -82,13 +82,14 @@
         android:id="@+id/Severity1"
         android:layout_width="97dp"
         android:layout_height="49dp"
+        android:autoText="true"
+        android:text="true"
         android:textAlignment="center"
         android:textColor="#050505"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.39"
-        tools:text="@string/severity_num" />
+        app:layout_constraintVertical_bias="0.39" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
