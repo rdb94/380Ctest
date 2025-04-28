@@ -4,4 +4,7 @@
     <string name='button2_text'>Record</string>
     <string name='severity_text'>Severity Score: </string>
     <string name="severityNum">Put number code here </string>
+    <string name='button3_text'>Stop Recording</string>
+    <string name='button4_text'>Play audio</string>
+    <string name='button5_text'>Stop playing</string>
 </resources>

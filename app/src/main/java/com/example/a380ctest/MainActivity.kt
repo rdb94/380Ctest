@@ -1,17 +1,41 @@
 package com.example.a380ctest
 
+
 // import androidx.activity.compose.setContent
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import android.widget.Switch
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import android.content.ContentValues
+import android.media.MediaRecorder
+import android.media.MediaRecorder.AudioSource.MIC
+import android.os.Environment
+import android.os.Parcelable.Creator
+import android.provider.MediaStore
+import java.io.FileOutputStream
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.a380ctest.databinding.ActivityMainBinding
 import com.example.a380ctest.playback.AndroidAudioPlayer
 import com.example.a380ctest.recorder.AndroidAudioRecorder
+import org.w3c.dom.Text
 import java.io.File
+import java.io.IOException
 
 
 class MainActivity() : ComponentActivity(), Parcelable {
@@ -30,11 +54,11 @@ class MainActivity() : ComponentActivity(), Parcelable {
 
     // Constructor for Parcelable
     constructor(parcel: Parcel) : this() {
-        // Read data from the Parcel (if needed)
+
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        // Write data to the Parcel (if needed)
+
     }
 
     override fun describeContents(): Int {
@@ -61,6 +85,8 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 
+    private val REQUESTMICPERMISSION = 200
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,7 +94,7 @@ class MainActivity() : ComponentActivity(), Parcelable {
         setContentView(binding.root)
 
         // Example of a call to a native method
-        binding.sampleText.text = stringFromJNI()
+        //  binding.sampleText.text = stringFromJNI()
 
         var switch: Switch = findViewById(R.id.switch1)
 
@@ -76,17 +102,115 @@ class MainActivity() : ComponentActivity(), Parcelable {
             val intent = Intent(this, ClinicianModeScreen::class.java)
             startActivity(intent)
         }
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUESTMICPERMISSION
+            )
+        } else {
+            startAnalysis()
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+        }
+
+//        setContent {
+//            AudioRecorderTheme{
+//                Column(
+//                    modifier = Modifier.fillMaxSize(),
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Button(onClick = {
+//                        File(cacheDir, "audio.mp3").also {
+//                            recorder.start(it)
+//                            audioFile = it
+//                        }
+//                    }) {
+//                        Text(text = "Start Recording")
+//                    }
+//                }
+//            }
+//        }
+
     }
 
-    fun recordClick(view: View?){
-        println("Button clicked!")
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        deviceId: Int
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+
+        if (requestCode == REQUESTMICPERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startAnalysis()
+            } else {
+                Toast.makeText(this, "Microphone permission is required", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    fun audioClick(view: View?){
-        println("Button clicked!")
+    private fun startAnalysis() {
+
     }
-    external fun stringFromJNI(): String
-}
+
+    fun recordClick(view: View?) {
+        println("Button clicked!")
+        File(cacheDir, "audio2.mp3").also {
+            recorder.start(it)
+            audioFile = it
+// trying to save externally
+            val values = ContentValues().apply {
+                put(MediaStore.Audio.Media.DISPLAY_NAME, "newAudio.mp3")
+                put(MediaStore.Audio.Media.MIME_TYPE, "audio/wav")
+                put(MediaStore.Audio.Media.RELATIVE_PATH, Environment.DIRECTORY_MUSIC)
+
+            }
+            val contentResolver = contentResolver
+            val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,values)
+    }
+//        val audioFile = File(filesDir, "audio_recording.pcm")
+//        val outputStream = FileOutputStream(audioFile)
+
+//        outputStream.write(audioData)
+//        outputStream.close()
+        }
+
+
+            fun recordStop(view: View?) {
+                recorder.stop()
+
+            }
+
+            fun playStart(view: View?) {
+
+                player.playFile(audioFile ?: return)
+            }
+
+            fun playStop(view: View?) {
+                player.stop()
+            }
+
+            fun audioClick(view: View?) {
+                println("Button clicked!")
+            }
+
+            // external fun stringFromJNI(): String
+
+        }
+
+
+
 
 /*
         fun main() {
