@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Parcelable
 import android.util.Log
@@ -14,11 +15,18 @@ import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import android.content.ContentValues
+import android.media.AudioFormat
+import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.media.MediaRecorder.AudioSource.MIC
 import android.os.Environment
 import android.os.Parcelable.Creator
 import android.provider.MediaStore
+import android.media.session.PlaybackState
+import android.media.session.MediaSession
+import android.media.session.MediaController
+import android.media.session.MediaSessionManager
+import androidx.annotation.RequiresPermission
 import java.io.FileOutputStream
 
 import androidx.compose.foundation.layout.Arrangement
@@ -30,12 +38,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import com.example.a380ctest.databinding.ActivityMainBinding
 import com.example.a380ctest.playback.AndroidAudioPlayer
 import com.example.a380ctest.recorder.AndroidAudioRecorder
 import org.w3c.dom.Text
 import java.io.File
 import java.io.IOException
+
+
+
 
 
 class MainActivity() : ComponentActivity(), Parcelable {
@@ -51,6 +63,8 @@ class MainActivity() : ComponentActivity(), Parcelable {
     }
 
     private var audioFile: File? = null
+
+
 
     // Constructor for Parcelable
     constructor(parcel: Parcel) : this() {
@@ -85,7 +99,9 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 
+
     private val REQUESTMICPERMISSION = 200
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,10 +133,15 @@ class MainActivity() : ComponentActivity(), Parcelable {
             startAnalysis()
         }
 
+
+
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
         }
 
+
+        //NOT THIS NOT USING ANYWAY LEAVE COMMENTED OUT
 //        setContent {
 //            AudioRecorderTheme{
 //                Column(
@@ -148,6 +169,7 @@ class MainActivity() : ComponentActivity(), Parcelable {
         permissions: Array<out String>,
         grantResults: IntArray,
         deviceId: Int
+
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
 
@@ -160,15 +182,81 @@ class MainActivity() : ComponentActivity(), Parcelable {
         }
     }
 
-    private fun startAnalysis() {
+//    private fun startAnalysis() {
+//
+//    }
 
+    //TRYING OUT NEW CODE
+    private lateinit var audioRecord: AudioRecord
+    private lateinit var audioData: ByteArray
+
+    private val sampleRate = 44100  // Sample rate, for example 44.1kHz
+    private val channelConfig = AudioFormat.CHANNEL_IN_MONO
+    private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+    private val bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+
+    private fun startAnalysis() {
+        audioData = ByteArray(bufferSize)
+        @SuppressLint("MissingPermission")
+        audioRecord = AudioRecord(
+            MIC,
+            sampleRate,
+            channelConfig,
+            audioFormat,
+            bufferSize
+        )
     }
+
+    //New
+
+//    private val sampleRate = 44100  // Sample rate, for example 44.1kHz
+//    private val channelConfig = AudioFormat.CHANNEL_IN_MONO
+//    private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+
+//    private val bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+    //needs permission first but app already has permission in general so can't figure out why this is unhappy
+//    @SuppressLint("MissingPermission")
+//    @RequiresPermission(value = "android.permission.RECORD_AUDIO")
+//    private val audioRecord = AudioRecord(
+//        MIC,
+//        sampleRate,
+//        channelConfig,
+//        audioFormat,
+//        bufferSize
+//    )
+
+//    private val audioData = ByteArray(bufferSize)  // This will hold the audio data captured from the microphone
+
+    private val outputStream = FileOutputStream(audioFile)
+    //END NEW CODE
+
 
     fun recordClick(view: View?) {
         println("Button clicked!")
-        File(cacheDir, "audio2.mp3").also {
+        File(cacheDir, "audio.mp3").also {
             recorder.start(it)
             audioFile = it
+            // Start recording
+            audioRecord.startRecording()
+
+            // Record audio for 5 seconds (for example)
+            val audioFile = File(filesDir, "audio_recording.pcm")
+//            val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
+//            uri?.let {
+//                contentResolver.openOutputStream(it)?.use { outputStream ->
+//                    outputStream.write(audioData)
+//                }
+//            }
+
+//            val outputStream = FileOutputStream(audioFile)
+
+                val read = audioRecord.read(audioData, 0, bufferSize)
+                if (read > 0) {
+                    // Write the audio data into the file
+                    outputStream.write(audioData, 0, read)
+                }
+
+
 // trying to save externally
             val values = ContentValues().apply {
                 put(MediaStore.Audio.Media.DISPLAY_NAME, "newAudio.mp3")
@@ -179,16 +267,21 @@ class MainActivity() : ComponentActivity(), Parcelable {
             val contentResolver = contentResolver
             val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,values)
     }
-//        val audioFile = File(filesDir, "audio_recording.pcm")
-//        val outputStream = FileOutputStream(audioFile)
+        val audioFile = File(filesDir, "audio_recording.pcm")
+        val outputStream = FileOutputStream(audioFile)
 
-//        outputStream.write(audioData)
-//        outputStream.close()
+        outputStream.write(audioData)
+        outputStream.close()
         }
 
 
             fun recordStop(view: View?) {
                 recorder.stop()
+
+                //new
+                audioRecord.stop()
+                audioRecord.release()
+                outputStream.close()
 
             }
 
@@ -206,6 +299,7 @@ class MainActivity() : ComponentActivity(), Parcelable {
             }
 
             // external fun stringFromJNI(): String
+
 
         }
 
